@@ -117,6 +117,30 @@ function renderRows(data) {
 
 }
 
+function renderSources(data) {
+
+  //console.log(typeof data) --> Object?!?!?!?!?
+
+  // why do i have to do this? why is each element inside newsSources consdiered an object, not a string?
+  let string = data + '';
+  
+  let splitter = string.split('/');
+  let cleanName = splitter[2];
+
+
+  // Vanilla js way
+  let source = document.createElement('li');
+  
+  // do i need <li></li> again here?
+  source.innerHTML = `
+    <li><a href="#">${cleanName}</a></li>
+  `;
+  document.getElementById('sources').appendChild(source);  
+
+}
+
+
+
 async function retrieveData(url, apiKey) {
   try {
     const rawResponse = await fetch(url);
@@ -177,21 +201,31 @@ async function init(sources) {
   let promises = [];
   for (let i = 0; i < sources.length; i++) {
     promises.push(retrieveData(sources[i]));
+    
+    //create sources for every url inside the newsSources array
+    renderSources(sources)
+  
   }
 
+  
+  
   // does this make newsData an array too? 
   const newsData = await Promise.all(promises);
 
   let cleanData = normalizeData(newsData);
 
-  cleanData.forEach(function(sources) {
+  cleanData.forEach(function(sources) {  
     sources.forEach(function(articles) {
       renderRows(articles);
+      
     });
   });
+
+
 }
 
 init(newsSources);
+
 
 // call init on
 // newsSources, an array with two values, 1. newsapi and 2. reddit
