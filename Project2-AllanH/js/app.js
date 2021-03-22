@@ -1,7 +1,8 @@
 import { newsKey } from './keys.js';
 let newsSources = [
-  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`,
   'https://www.reddit.com/top.json'
+//  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`
+  
 ];
 
 // API Call Examples
@@ -77,22 +78,6 @@ let apiCall = fetch('https://cors.bridged.cc/https://www.reddit.com/top.json');
 //   .catch(err => console.log(err));
 
 function renderRows(data) {
-  // jQuery way
-  // $('#main').append(`
-  //   <article class="article">
-  //     <section class="featuredImage">
-  //       <img src="${data.img}" alt="" />
-  //     </section>
-  //     <section class="articleContent">
-  //         <a href="${data.url}"><h3>${data.title}</h3></a>
-  //         <h6>Lifestyle - ${data.author}</h6>
-  //     </section>
-  //     <section class="impressions">
-  //       526
-  //     </section>
-  //     <div class="clearfix"></div>
-  //   </article>
-  // `);
 
   // Vanilla js way
   let article = document.createElement('article');
@@ -111,7 +96,25 @@ function renderRows(data) {
       <div class="clearfix"></div>
     </article>
   `;
-  document.getElementById('main').appendChild(article);
+  document.getElementById('main').appendChild(article);  
+  
+  // jQuery way
+  // $('#main').append(`
+  //   <article class="article">
+  //     <section class="featuredImage">
+  //       <img src="${data.img}" alt="" />
+  //     </section>
+  //     <section class="articleContent">
+  //         <a href="${data.url}"><h3>${data.title}</h3></a>
+  //         <h6>Lifestyle - ${data.author}</h6>
+  //     </section>
+  //     <section class="impressions">
+  //       526
+  //     </section>
+  //     <div class="clearfix"></div>
+  //   </article>
+  // `);
+
 }
 
 async function retrieveData(url, apiKey) {
@@ -142,19 +145,28 @@ function normalizeData(data) {
     this.url = url;
     this.img = img;
   }
+  
   for (let i = 0; i < data.length; i++) {
     let cleanData = [];
+  
+    //hard coded??!?! include comment indicating which if loop is for which source 
+    //the first link, reddit
     if(i === 0) {
-      data[i].articles.forEach(function(result) {
-        cleanData.push(new ArticleObj(result.title, result.author, result.url, result.urlToImage));
-      });
-      data[i] = cleanData;
-    } else if(i === 1) {
       data[i].data.children.forEach(function(result) {
         cleanData.push(new ArticleObj(result.data.title, result.data.author, result.data.url, result.data.thumbnail));
       });
+      
+      // overriding newsData, raw data, with cleanData, an array. 2d array forms here
       data[i] = cleanData;
     }
+
+    //seccond link, the news api
+    // else if(i === 1) {
+    //   data[i].articles.forEach(function(result) {
+    //     cleanData.push(new ArticleObj(result.title, result.author, result.url, result.urlToImage));
+    //   });
+    //   data[i] = cleanData;
+    // }
   }
   return data;
 }
@@ -164,7 +176,10 @@ async function init(sources) {
   for (let i = 0; i < sources.length; i++) {
     promises.push(retrieveData(sources[i]));
   }
+
+  // does this make newsData an array too? 
   const newsData = await Promise.all(promises);
+
   let cleanData = normalizeData(newsData);
 
   cleanData.forEach(function(sources) {
@@ -175,3 +190,12 @@ async function init(sources) {
 }
 
 init(newsSources);
+
+// call init on
+// newsSources, an array with two values, 1. newsapi and 2. reddit
+// call retrieve data on each of those newsSources array elements, requires url and apikey, but apikey isn't even passed in or used in the function 
+// push retrieve data results into promises[]
+// newsData waits on the promises[] data to load?
+// cleanData is the result of noramlizeData
+// renderrow for each new type
+// does this mean all rwos from source 1 will be created, then all rows from source 2?
