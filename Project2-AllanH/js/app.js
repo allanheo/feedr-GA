@@ -87,8 +87,8 @@ function renderRows(data) {
         <img src="${data.img}" alt="" />
       </section>
       <section class="articleContent">
-          <a href="${data.url}"><h3>${data.title}</h3></a>
-          <h6>Lifestyle - ${data.author}</h6>
+          <a href="${data.url}" target="_blank"><h3>${data.title}</h3></a>
+          <h6>Author - ${data.author}</h6>
       </section>
       <section class="impressions">
         526
@@ -144,6 +144,8 @@ function normalizeData(data) {
     this.author = author;
     this.url = url;
     this.img = img;
+    //for the number on the right
+    //this.number = number
   }
   
   for (let i = 0; i < data.length; i++) {
