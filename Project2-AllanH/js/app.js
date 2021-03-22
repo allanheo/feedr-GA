@@ -226,6 +226,10 @@ async function init(sources) {
 
 init(newsSources);
 
+// => arrow function, or anonymous function, ask for it to wait
+document.getElementById('sourceOne').addEventlistener('click', () => console.log('click'));
+
+
 
 // call init on
 // newsSources, an array with two values, 1. newsapi and 2. reddit
