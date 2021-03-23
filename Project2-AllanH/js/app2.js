@@ -220,8 +220,9 @@ async function init(sources) {
 
 init(newsSources);
 
+// Creating an event listener for each of the sources in the drop down
 // => arrow function, or anonymous function, ask for it to wait
-document.getElementById('sourceOne').addEventlistener('click', () => console.log('click'));
+
 
 // we need a different init function
 // possibly need separate render rows and separate normalize

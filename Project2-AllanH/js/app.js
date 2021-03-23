@@ -4,96 +4,8 @@ let newsSources = [
   'https://www.reddit.com/top.json'
 ];
 
-// API Call Examples
-// Fetch API Call with chain method
-// fetch(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`, {
-//   method: 'GET',
-// })
-//   .then(response => response.json())
-//   .then(json => console.log(json))
-//   .catch(err => console.log(err));
-
-// Example provided by News API
-// https://newsapi.org/docs/get-started
-// var url = 'http://newsapi.org/v2/top-headlines?' +
-//           'country=us&' +
-//           `apiKey=${newsKey}`;
-// var req = new Request(url);
-// console.log(req);
-// fetch(req)
-//   .then((response) => response.json()).then(json => console.log(json))
-
-  
-// Async Await Method, example from lesson 9
-// const fetchThings = async (url) => {
-//   try {
-//     // fetch the raw response
-//     const rawResponse = await fetch(url);
-
-//     // fetch only rejects for network error or connection issues
-
-//     // as a result, we need to handle different scenarios here
-//     // rawResponse.ok is true if status code is between 200 - 299
-//     if (!rawResponse.ok) {
-//       throw new Error(rawResponse);
-//     }
-
-//     // could also key off status directly
-//     if (rawResponse.status === 404) {
-//       throw new Error('Not found');
-//     }
-
-//     // if we made it this far, we're ok
-//     // parse response into json
-//     const jsonResponse = await rawResponse.json();
-
-//     // now we can do whatever we want with jsonResponse
-//     // add elements to DOM, make more requests, etc.
-//     console.log(jsonResponse);
-//     jsonResponse.articles.forEach(function(result) {
-//       console.log(result.title);
-//       renderRows(result.title);
-//     });
-//   } catch (err) {
-//     console.log('err', err);
-//   }
-// };
-// fetchThings(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`);
-
-
-// Reddit API with Proxy
-// let apiCall = fetch('https://cors.bridged.cc/https://www.reddit.com/top.json');
-
-// apiCall
-//   .then(res => res.json())
-//   .then(results => {
-//     console.log(results.data.children);
-//     results.data.children.forEach(function(result){
-//       // $('ul').append('<li>'+result.data.title+'</li>')
-//       renderRows(result.data.title);
-//     });
-    
-//   })
-//   .catch(err => console.log(err));
-
 function renderRows(data) {
-  // jQuery way
-  // $('#main').append(`
-  //   <article class="article">
-  //     <section class="featuredImage">
-  //       <img src="${data.img}" alt="" />
-  //     </section>
-  //     <section class="articleContent">
-  //         <a href="${data.url}"><h3>${data.title}</h3></a>
-  //         <h6>Lifestyle - ${data.author}</h6>
-  //     </section>
-  //     <section class="impressions">
-  //       526
-  //     </section>
-  //     <div class="clearfix"></div>
-  //   </article>
-  // `);
-
+  
   // Vanilla js way
   let article = document.createElement('article');
   article.innerHTML = `
@@ -111,6 +23,25 @@ function renderRows(data) {
   `;
   article.classList.add('article')
   document.getElementById('main').appendChild(article);
+}
+
+function renderSources(data, i) {
+
+  //console.log(typeof data) --> Object?!?!?!?!?
+
+  // why do i have to do this? why is each element inside newsSources consdiered an object, not a string?
+  let string = data + '';
+  let splitter = string.split('/');
+  let cleanName = splitter[2]
+
+  // Vanilla js way
+  let source = document.createElement('li');
+  
+  // do i need <li></li> again here?
+  source.innerHTML = `
+    <li id=source${i}><a href="#">${cleanName}</a></li>
+  `;
+  document.getElementById('sources').appendChild(source);  
 }
 
 async function retrieveData(url, apiKey) {
@@ -145,11 +76,15 @@ function normalizeData(data) {
   }
   for (let i = 0; i < data.length; i++) {
     let cleanData = [];
+
+    // newsapi
     if(i === 0) {
       data[i].articles.forEach(function(result) {
         cleanData.push(new ArticleObj(result.title, result.author, result.url, result.urlToImage));
       });
       data[i] = cleanData;
+    
+    // reddit
     } else if(i === 1) {
       data[i].data.children.forEach(function(result) {
         cleanData.push(new ArticleObj(result.data.title, result.data.author, result.data.url, result.data.thumbnail));
@@ -165,10 +100,14 @@ async function init(sources) {
   let promises = [];
   for (let i = 0; i < sources.length; i++) {
     promises.push(retrieveData(sources[i]));
+    renderSources(sources[i], i)
   }
+  
   const newsData = await Promise.all(promises);
+  
   // step 2 normalize data
   let cleanData = normalizeData(newsData);
+  console.log("this is newsData", newsData)
 
   // step 3 render to dom
   cleanData.forEach(function(sources) {
@@ -178,4 +117,43 @@ async function init(sources) {
   });
 }
 
+async function initSingle(sources, i) {
+  // this function will only be called when individual sources are clicked
+
+  // step 0 delete all childnodes of "main"
+  let parent = document.getElementById('main')
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild)
+  }
+  
+  // step 1 retrieve data
+  let promises = [];
+  for (let i = 0; i < sources.length; i++) {
+    promises.push(retrieveData(sources[i]));
+  }
+  
+  const newsData = await Promise.all(promises);
+  
+  // step 2 normalize data
+  let cleanData = normalizeData(newsData);
+  console.log("this is newsData", newsData)
+
+  // step 3 render to dom
+  cleanData[i].forEach(function(articles) {
+    renderRows(articles);
+  });
+
+  // step 4 change source name in search bar
+  let string = sources[i] + '';
+  let splitter = string.split('/');
+  let cleanName = splitter[2]
+  document.getElementById('sourceName').innerHTML = cleanName
+
+}
+
 init(newsSources);
+for(let i = 0; i < newsSources.length; i++) {
+  // is this just fancy notation? could i have used a normal function notation?
+  document.getElementById(`source${i}`).addEventListener('click', () => initSingle(newsSources, i));
+}
+
