@@ -1,8 +1,7 @@
 import { newsKey } from './keys.js';
 let newsSources = [
+  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`,
   'https://www.reddit.com/top.json'
-//  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`
-  
 ];
 
 // API Call Examples
@@ -26,44 +25,44 @@ let newsSources = [
 
   
 // Async Await Method, example from lesson 9
-const fetchThings = async (url) => {
-  try {
-    // fetch the raw response
-    const rawResponse = await fetch(url);
+// const fetchThings = async (url) => {
+//   try {
+//     // fetch the raw response
+//     const rawResponse = await fetch(url);
 
-    // fetch only rejects for network error or connection issues
+//     // fetch only rejects for network error or connection issues
 
-    // as a result, we need to handle different scenarios here
-    // rawResponse.ok is true if status code is between 200 - 299
-    if (!rawResponse.ok) {
-      throw new Error(rawResponse);
-    }
+//     // as a result, we need to handle different scenarios here
+//     // rawResponse.ok is true if status code is between 200 - 299
+//     if (!rawResponse.ok) {
+//       throw new Error(rawResponse);
+//     }
 
-    // could also key off status directly
-    if (rawResponse.status === 404) {
-      throw new Error('Not found');
-    }
+//     // could also key off status directly
+//     if (rawResponse.status === 404) {
+//       throw new Error('Not found');
+//     }
 
-    // if we made it this far, we're ok
-    // parse response into json
-    const jsonResponse = await rawResponse.json();
+//     // if we made it this far, we're ok
+//     // parse response into json
+//     const jsonResponse = await rawResponse.json();
 
-    // now we can do whatever we want with jsonResponse
-    // add elements to DOM, make more requests, etc.
-    console.log(jsonResponse);
-    jsonResponse.articles.forEach(function(result) {
-      console.log(result.title);
-      renderRows(result.title);
-    });
-  } catch (err) {
-    console.log('err', err);
-  }
-};
+//     // now we can do whatever we want with jsonResponse
+//     // add elements to DOM, make more requests, etc.
+//     console.log(jsonResponse);
+//     jsonResponse.articles.forEach(function(result) {
+//       console.log(result.title);
+//       renderRows(result.title);
+//     });
+//   } catch (err) {
+//     console.log('err', err);
+//   }
+// };
 // fetchThings(`https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`);
 
 
 // Reddit API with Proxy
-let apiCall = fetch('https://cors.bridged.cc/https://www.reddit.com/top.json');
+// let apiCall = fetch('https://cors.bridged.cc/https://www.reddit.com/top.json');
 
 // apiCall
 //   .then(res => res.json())
@@ -78,26 +77,6 @@ let apiCall = fetch('https://cors.bridged.cc/https://www.reddit.com/top.json');
 //   .catch(err => console.log(err));
 
 function renderRows(data) {
-
-  // Vanilla js way
-  let article = document.createElement('article');
-  article.innerHTML = `
-    <article class="article">
-      <section class="featuredImage">
-        <img src="${data.img}" alt="" />
-      </section>
-      <section class="articleContent">
-          <a href="${data.url}" target="_blank"><h3>${data.title}</h3></a>
-          <h6>Author - ${data.author}</h6>
-      </section>
-      <section class="impressions">
-        526
-      </section>
-      <div class="clearfix"></div>
-    </article>
-  `;
-  document.getElementById('main').appendChild(article);  
-  
   // jQuery way
   // $('#main').append(`
   //   <article class="article">
@@ -115,31 +94,24 @@ function renderRows(data) {
   //   </article>
   // `);
 
-}
-
-function renderSources(data) {
-
-  //console.log(typeof data) --> Object?!?!?!?!?
-
-  // why do i have to do this? why is each element inside newsSources consdiered an object, not a string?
-  let string = data + '';
-  
-  let splitter = string.split('/');
-  let cleanName = splitter[2];
-
-
   // Vanilla js way
-  let source = document.createElement('li');
-  
-  // do i need <li></li> again here?
-  source.innerHTML = `
-    <li><a href="#">${cleanName}</a></li>
+  let article = document.createElement('article');
+  article.innerHTML = `
+      <section class="featuredImage">
+        <img src="${data.img}" alt="" />
+      </section>
+      <section class="articleContent">
+          <a href="${data.url}"><h3>${data.title}</h3></a>
+          <h6>Lifestyle - ${data.author}</h6>
+      </section>
+      <section class="impressions">
+        526
+      </section>
+      <div class="clearfix"></div>
   `;
-  document.getElementById('sources').appendChild(source);  
-
+  article.classList.add('article')
+  document.getElementById('main').appendChild(article);
 }
-
-
 
 async function retrieveData(url, apiKey) {
   try {
@@ -168,74 +140,42 @@ function normalizeData(data) {
     this.author = author;
     this.url = url;
     this.img = img;
-    //for the number on the right
-    //this.number = number
+    //impressions
+    //category
   }
-  
   for (let i = 0; i < data.length; i++) {
     let cleanData = [];
-  
-    //hard coded??!?! include comment indicating which if loop is for which source 
-    //the first link, reddit
     if(i === 0) {
+      data[i].articles.forEach(function(result) {
+        cleanData.push(new ArticleObj(result.title, result.author, result.url, result.urlToImage));
+      });
+      data[i] = cleanData;
+    } else if(i === 1) {
       data[i].data.children.forEach(function(result) {
         cleanData.push(new ArticleObj(result.data.title, result.data.author, result.data.url, result.data.thumbnail));
       });
-      
-      // overriding newsData, raw data, with cleanData, an array. 2d array forms here
       data[i] = cleanData;
     }
-
-    //seccond link, the news api
-    // else if(i === 1) {
-    //   data[i].articles.forEach(function(result) {
-    //     cleanData.push(new ArticleObj(result.title, result.author, result.url, result.urlToImage));
-    //   });
-    //   data[i] = cleanData;
-    // }
   }
   return data;
 }
 
 async function init(sources) {
+  // step 1 retrieve data
   let promises = [];
   for (let i = 0; i < sources.length; i++) {
     promises.push(retrieveData(sources[i]));
-    
-    //create sources for every url inside the newsSources array
-    renderSources(sources)
-  
   }
-
-  
-  
-  // does this make newsData an array too? 
   const newsData = await Promise.all(promises);
-
+  // step 2 normalize data
   let cleanData = normalizeData(newsData);
 
-  cleanData.forEach(function(sources) {  
+  // step 3 render to dom
+  cleanData.forEach(function(sources) {
     sources.forEach(function(articles) {
       renderRows(articles);
-      
     });
   });
-
-
 }
 
 init(newsSources);
-
-// => arrow function, or anonymous function, ask for it to wait
-document.getElementById('sourceOne').addEventlistener('click', () => console.log('click'));
-
-
-
-// call init on
-// newsSources, an array with two values, 1. newsapi and 2. reddit
-// call retrieve data on each of those newsSources array elements, requires url and apikey, but apikey isn't even passed in or used in the function 
-// push retrieve data results into promises[]
-// newsData waits on the promises[] data to load?
-// cleanData is the result of noramlizeData
-// renderrow for each new type
-// does this mean all rwos from source 1 will be created, then all rows from source 2?
