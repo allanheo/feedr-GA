@@ -96,11 +96,16 @@ function normalizeData(data) {
 }
 
 async function init(sources) {
+  // step 0 delete all childnodes of "main"
+  let parent = document.getElementById('main')
+  while (parent.firstChild) {
+    parent.removeChild(parent.firstChild)
+  }
+  
   // step 1 retrieve data
   let promises = [];
   for (let i = 0; i < sources.length; i++) {
     promises.push(retrieveData(sources[i]));
-    renderSources(sources[i], i)
   }
   
   const newsData = await Promise.all(promises);
@@ -115,10 +120,13 @@ async function init(sources) {
       renderRows(articles);
     });
   });
+
+  document.getElementById('sourceName').innerHTML = "Source Name"
 }
 
+// not happy about having to duplicate almost every line of init just to accomplish running a single element of cleanData at a time
+// this function will only be called when individual sources are clicked
 async function initSingle(sources, i) {
-  // this function will only be called when individual sources are clicked
 
   // step 0 delete all childnodes of "main"
   let parent = document.getElementById('main')
@@ -151,9 +159,22 @@ async function initSingle(sources, i) {
 
 }
 
+// on page load
+
+// render source list
+for (let i = 0; i < newsSources.length; i++) {
+  renderSources(newsSources[i], i)
+}
+
+// render all news source articles
 init(newsSources);
+
+// add event listeners for each source in the drop down
 for(let i = 0; i < newsSources.length; i++) {
   // is this just fancy notation? could i have used a normal function notation?
   document.getElementById(`source${i}`).addEventListener('click', () => initSingle(newsSources, i));
 }
+
+// add even listener for "Allan"
+document.getElementById('home').addEventListener('click', () => init(newsSources));
 
