@@ -28,8 +28,44 @@ function renderRows(data, index) {
   article.classList.add('article')
   document.getElementById('main').appendChild(article);
 
+  // event listener for the icon 
   document.getElementById(`popUpToggle${index}`).addEventListener('click', function onClick() {
+    
+    // create popup content
+    let popUp = document.createElement('div');
+    popUp.innerHTML = `
+    <a href="#" id="closePopUp">X</a>
+      <div class="container">
+        <h1>${data.title}</h1>
+        <p>
+          Article description/content here.
+        </p>
+        <a href="${data.url}" class="popUpAction" target="_blank">Read more from source</a>
+      </div>    
+    `
+    
+    // add this to the popup
+    document.getElementById('popUp').appendChild(popUp);
+    
+    // remove the hidden class to make it show
     document.getElementById('popUp').classList.remove("hidden", "loader");
+
+    // event listener for x button on each pop up
+    document.getElementById("closePopUp").addEventListener('click', function onClick() {
+    
+      // clearing the popup for the next popup to have a clean slate
+      
+      //*** below will not work bc there's nothing to grab in the document
+      // document.getElementById('popUp').removeChild(document.getElementById('popUp').firstChild)
+      
+      // need to clear the innerHTML for the popup content I just added 
+      popUp.innerHTML = ''
+
+      // add hidden class to remove the popup
+      document.getElementById('popUp').classList.add("hidden");
+
+    });
+
   });
   
 }
@@ -194,12 +230,6 @@ document.getElementById('home').addEventListener('click', () => init(newsSources
 
 // add event listener for the magnifying glass
 document.getElementById('home').addEventListener('click', () => init(newsSources));
-
-// event listener for x button on each pop up
-document.getElementById("closePopUp").addEventListener('click', function onClick() {
-  document.getElementById('popUp').classList.add("hidden");
-});
-
 
 
 // popup toggle for every icon clicked
