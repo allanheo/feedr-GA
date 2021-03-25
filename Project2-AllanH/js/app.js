@@ -154,6 +154,7 @@ async function init(sources) {
     parent.removeChild(parent.firstChild)
   }
   
+  
   // step 1 retrieve data
   let promises = [];
   for (let i = 0; i < sources.length; i++) {
@@ -225,10 +226,18 @@ for(let i = 0; i < newsSources.length; i++) {
   document.getElementById(`source${i}`).addEventListener('click', () => initSingle(newsSources, i));
 }
 
-// add event listener for "Allan"
-document.getElementById('home').addEventListener('click', () => init(newsSources));
+// add event listener for magnifying glass
+document.getElementById('search').addEventListener('click', () => {
+  if (document.getElementById("sources").style.display === "inherit") {
+    document.getElementById("sources").style.display = "";    
+  } 
+  
+  else {
+    document.getElementById("sources").style.display = "inherit";
+  }
+});
 
-// add event listener for the magnifying glass
+// add event listener for "Allan"
 document.getElementById('home').addEventListener('click', () => init(newsSources));
 
 
