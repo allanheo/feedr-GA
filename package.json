@@ -2,9 +2,18 @@
   "name": "feedr-project",
   "version": "1.0.0",
   "description": "",
-  "main": "feedr-project/Project2-AllanH/js/app.js",
+  "main": "dist/index.js",
+  "targets": {
+    "main": {
+      "outputFormat": "esmodule"
+    }
+  },
+  "browserslist": [
+    "last 1 Chrome versions"
+  ],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "parcel index.html --out-dir docs",
+    "build": "parcel build index.html --out-dir docs --public-url ./"
   },
   "repository": {
     "type": "git",
@@ -14,5 +23,8 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^8.2.0"
+  },
+  "devDependencies": {
+    "cssnano": "^4.1.10"
   }
 }
