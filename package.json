@@ -1,0 +1,18 @@
+{
+  "name": "feedr-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "feedr-project/Project2-AllanH/js/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://git.generalassemb.ly/allan0325/feedr-project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^8.2.0"
+  }
+}

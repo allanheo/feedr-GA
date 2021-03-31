@@ -1,11 +1,19 @@
+// heavy on comments. might be a bit overkill, but i personally can't do without the comments!! 
+// when adding new sources, the only hard code required is inside normalizeData
+// the source will automatically be listed with this split function
+// didn't feel comfortable with all the getelement or getclass by id, but we used it so much for this project, i feel good about it
+// really had to be at least familiar with the html and css file, had to search in css file to be familiar, and then google searched
+
+
 // DON'T FORGET TO LOCALHOST!!!!!!!!!
 // for every new newSource, the only functions that needs hard-editing is normalizeData(data)
 
 import { newsKey } from './keys.js';
 let newsSources = [
-  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsKey}`,
+  `https://newsapi.org/v2/top-headlines?country=us&apiKey=${process.env.NEWS_KEY}`,
   'https://www.reddit.com/top.json',
-  'https://api.nytimes.com/svc/topstories/v2/us.json?api-key=pAHxmpq5mr6pevxYnc3IA9NogLs8msA1'
+  `https://api.nytimes.com/svc/topstories/v2/us.json?api-key=${process.env.NYTIMES_KEY}`
+  
 ];
 //-------------------------------------------------------------------
 function renderRows(data, index) {

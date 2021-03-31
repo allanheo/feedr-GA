@@ -19,7 +19,7 @@
   top: 20px;
   right: 20px;
   font-size: 40px;
-  color: #FE052C;      
+  color: #5c05fe;      
   text-decoration: none;
 }
 
@@ -43,7 +43,7 @@
 
 #popUp .popUpAction {
   padding: 10px;
-  background-color: #FE052C;
+  background-color: #5c05fe;
   color: #fff;
   text-decoration: none;
   border-radius: 5px;
@@ -53,13 +53,13 @@
 }
 
 #popUp .popUpAction:hover {
-  color: #FE052C;
+  color: #5c05fe;
   background: #fff;
 }
 
 /* Header styles */
 header {
-  background-color: #FE052C;
+  background-color: #5c05fe;
   position: fixed;
   top: 0;
   left: 0;
@@ -219,7 +219,7 @@ nav ul ul li {
 
 .article .articleContent h3 {
   margin-bottom: 0;
-  color: #FE052C;
+  color: #5c05fe;
 }
 
 .article .articleContent h6 {
